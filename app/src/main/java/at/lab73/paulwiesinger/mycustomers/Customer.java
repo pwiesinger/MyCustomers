@@ -12,6 +12,13 @@ public class Customer {
         this.lastname = lastname;
     }
 
+    public Customer(String csvLine) {
+        String[] arr = csvLine.split(",");
+        this.firstname = arr[1];
+        this.lastname = arr[2];
+        this.id = Integer.parseInt(arr[0]);
+    }
+
     public int getId() {
         return id;
     }
@@ -34,5 +41,10 @@ public class Customer {
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    @Override
+    public String toString() {
+        return firstname + ", " + lastname;
     }
 }
