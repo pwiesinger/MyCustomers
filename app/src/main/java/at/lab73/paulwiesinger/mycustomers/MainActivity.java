@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     // list view data source
     private List<Customer> items = new ArrayList<>();
+    private List<Customer> itemsBackup = new ArrayList<>();
     private ArrayAdapter<Customer> adapter;
 
     @Override
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setupData();
 
         setupAdapter();
+
+        setupSearch();
     }
 
 
@@ -46,10 +50,36 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        itemsBackup.addAll(items);
     }
 
     private void setupAdapter() {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
+    }
+
+    private void setupSearch() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+
+            // we use live search with instant results
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                if (newText.isEmpty()) {
+                    items.clear();
+                    items.addAll(itemsBackup);
+                } else {
+                    items.clear();
+                    items.addAll(itemsBackup.stream().filter((a) -> a.toString().toUpperCase().contains(newText.toUpperCase())).collect(Collectors.toList()));
+                }
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
     }
 }
