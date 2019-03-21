@@ -1,16 +1,23 @@
 package at.lab73.paulwiesinger.mycustomers;
 
+import android.app.AlertDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +41,26 @@ public class MainActivity extends AppCompatActivity {
         searchView = findViewById(R.id.searchView);
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            // TODO: implement a dialog
+            EditText et = new EditText(getApplicationContext());
+            TextView tv = new TextView(getApplicationContext());
+            tv.setText("id,firstname,lastname,title,email,marital_status,creditcard");
+
+            LinearLayout layout = new LinearLayout(getApplicationContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.addView(tv);
+            layout.addView(et);
+
+
+            new AlertDialog.Builder(this)
+                    .setView(layout)
+                    .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                        // do something with picker.getValue()
+                        itemsBackup.add(new Customer(et.getText().toString()));
+                        addData(et.getText().toString());
+                        adapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         });
 
         setupData();
@@ -52,6 +78,18 @@ public class MainActivity extends AppCompatActivity {
             while(l != null) {
                 items.add(new Customer(l));
                 l = br.readLine();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        // read from file
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(openFileInput("adds.csv")));
+            String line = br.readLine();
+            while (line != null) {
+                items.add(new Customer(line));
+                line = br.readLine();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -88,5 +126,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void addData(String line) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(getApplicationContext().openFileOutput("adds.csv", MODE_APPEND)));
+            bw.write(line);
+            bw.newLine();
+            bw.flush();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
