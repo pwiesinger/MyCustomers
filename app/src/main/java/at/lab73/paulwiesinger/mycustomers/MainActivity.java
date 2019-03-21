@@ -1,5 +1,6 @@
 package at.lab73.paulwiesinger.mycustomers;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
     private SearchView searchView;
+    private FloatingActionButton fab;
 
     // list view data source
     private List<Customer> items = new ArrayList<>();
@@ -30,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.listView);
         searchView = findViewById(R.id.searchView);
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            // TODO: implement a dialog
+        });
 
         setupData();
 
